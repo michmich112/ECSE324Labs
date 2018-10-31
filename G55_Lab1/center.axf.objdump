@@ -1,0 +1,107 @@
+
+//campus.mcgill.ca/EMF/ELE/jpeter38/My Documents/ECSE324/G55_Lab1/center.axf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 <__cs3_interrupt_vector>:
+			.text
+			.global _start
+_start:
+			LDR R5, =COUNTER	// R5 points to counter location	
+   0:	e59f509c 	ldr	r5, [pc, #156]	; a4 <NUMBERS+0x20>
+			LDR R4, AVERAGE		// R4 holds the average average	
+   4:	e59f4070 	ldr	r4, [pc, #112]	; 7c <AVERAGE>
+			LDR R2, N			// R2 holds the number of elements in the list
+   8:	e59f2070 	ldr	r2, [pc, #112]	; 80 <N>
+			LDR R3, =NUMBERS	// R3 points to the first number
+   c:	e59f3094 	ldr	r3, [pc, #148]	; a8 <NUMBERS+0x24>
+			LDR R0, [R3]		// R0 holds the first number in the list
+  10:	e5930000 	ldr	r0, [r3]
+			ADD R2, R2, #1		// Add one to the number of elements to correct for decrementation	
+  14:	e2822001 	add	r2, r2, #1
+
+00000018 <LOOP>:
+
+LOOP:		SUBS R2, R2, #1		// Decrement list counter by 1
+  18:	e2522001 	subs	r2, r2, #1
+			BEQ SGETAVG			// Get average when counter equals zero
+  1c:	0a000003 	beq	30 <SGETAVG>
+			ADD R4, R4, R0		// Adds the past sum with R0
+  20:	e0844000 	add	r4, r4, r0
+			ADD R3, R3, #4		// R3 points to next element in the list
+  24:	e2833004 	add	r3, r3, #4
+			LDR R0, [R3]		// R0 holds the next value in the list
+  28:	e5930000 	ldr	r0, [r3]
+			B LOOP				// loop backs
+  2c:	eafffff9 	b	18 <LOOP>
+
+00000030 <SGETAVG>:
+
+SGETAVG:	LDR R2, N			// R2 holds the number of elements in the list
+  30:	e59f2048 	ldr	r2, [pc, #72]	; 80 <N>
+			LDR R6, [R5]		// R6 holds the value of counter
+  34:	e5956000 	ldr	r6, [r5]
+
+00000038 <GETAVG>:
+GETAVG:		SUBS R1, R2, R6		// Subtract number of elements by the counter
+  38:	e0521006 	subs	r1, r2, r6
+			BEQ STRCENTER		// Once average is found start centering
+  3c:	0a000002 	beq	4c <STRCENTER>
+			LSL R6, R6, #1		// Left shift counter by 1
+  40:	e1a06086 	lsl	r6, r6, #1
+			LSR R4, R4, #1		// Right shift sum by 1
+  44:	e1a040a4 	lsr	r4, r4, #1
+			B GETAVG			// Branch to GETAVG
+  48:	eafffffa 	b	38 <GETAVG>
+
+0000004c <STRCENTER>:
+
+STRCENTER:	LDR R2, N 			// R2 holds the number of elements in the list
+  4c:	e59f202c 	ldr	r2, [pc, #44]	; 80 <N>
+			LDR R3, =NUMBERS	// R3 points to the first number
+  50:	e59f3050 	ldr	r3, [pc, #80]	; a8 <NUMBERS+0x24>
+			ADD R2, R2, #1		// Add one to the number of elements to correct for decrementation
+  54:	e2822001 	add	r2, r2, #1
+
+00000058 <CENTER>:
+CENTER:		SUBS R2, R2, #1		// Decrement list counter by 1
+  58:	e2522001 	subs	r2, r2, #1
+			BEQ END				// Done once centered
+  5c:	0a000004 	beq	74 <END>
+			LDR R0, [R3]		// R0 holds the number in the list
+  60:	e5930000 	ldr	r0, [r3]
+			SUBS R1, R0, R4		// Subtract number by average
+  64:	e0501004 	subs	r1, r0, r4
+			STR R1, [R3]		// Store the difference back into R3
+  68:	e5831000 	str	r1, [r3]
+			ADD R3, R3, #4		// R3 points to the next value in the list
+  6c:	e2833004 	add	r3, r3, #4
+			B CENTER			// Loop back
+  70:	eafffff8 	b	58 <CENTER>
+
+00000074 <END>:
+
+END:		B END
+  74:	eafffffe 	b	74 <END>
+
+00000078 <COUNTER>:
+  78:	00000001 	.word	0x00000001
+
+0000007c <AVERAGE>:
+  7c:	00000000 	.word	0x00000000
+
+00000080 <N>:
+  80:	00000008 	.word	0x00000008
+
+00000084 <NUMBERS>:
+  84:	00000004 	.word	0x00000004
+  88:	00000005 	.word	0x00000005
+  8c:	00000003 	.word	0x00000003
+  90:	00000006 	.word	0x00000006
+  94:	00000001 	.word	0x00000001
+  98:	00000008 	.word	0x00000008
+  9c:	00000002 	.word	0x00000002
+  a0:	00000005 	.word	0x00000005
+  a4:	00000078 	.word	0x00000078
+  a8:	00000084 	.word	0x00000084

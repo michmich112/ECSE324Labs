@@ -1,0 +1,81 @@
+
+//campus.mcgill.ca/EMF/ELE/jpeter38/My Documents/ECSE324/G55_Lab1/stddev.axf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 <__cs3_interrupt_vector>:
+			.text
+			.global _start
+_start:
+			LDR R4, =RESULT		// R4 holds location of RESULT
+   0:	e59f4074 	ldr	r4, [pc, #116]	; 7c <NUMBERS+0x20>
+			LDR R2, [R4, #4]	// R2 holds the number of elements in the list
+   4:	e5942004 	ldr	r2, [r4, #4]
+			ADD R3, R4, #8		// R3 point to the first number
+   8:	e2843008 	add	r3, r4, #8
+			LDR R0, [R3]		// Holds first number in the list
+   c:	e5930000 	ldr	r0, [r3]
+			LDR R5, [R3]		// Stores max value 
+  10:	e5935000 	ldr	r5, [r3]
+			LDR R6, [R3]		// Stores min value
+  14:	e5936000 	ldr	r6, [r3]
+
+00000018 <LOOP>:
+
+LOOP:		SUBS R2, R2, #1		// Decrements number of elements
+  18:	e2522001 	subs	r2, r2, #1
+			BEQ DONE			// Branch to DONE when done looping
+  1c:	0a000009 	beq	48 <DONE>
+			ADD R3, R3, #4		// R3 points to the next value in the list
+  20:	e2833004 	add	r3, r3, #4
+			LDR R1, [R3]		// R1 stores the value of R3
+  24:	e5931000 	ldr	r1, [r3]
+			CMP R5, R1			// Compare the max value and the new value of R1
+  28:	e1550001 	cmp	r5, r1
+			BGE FINDMIN			// If max is greater than or equal, branch to FINDMIN
+  2c:	aa000001 	bge	38 <FINDMIN>
+			MOV R5, R1			// If greater switch R1 to max
+  30:	e1a05001 	mov	r5, r1
+			B LOOP				// Branch to LOOP
+  34:	eafffff7 	b	18 <LOOP>
+
+00000038 <FINDMIN>:
+
+FINDMIN:    CMP R1, R6			// Compare the R1 with min
+  38:	e1510006 	cmp	r1, r6
+			BGE LOOP			// If R1 is greater or equal than min branch to LOOP
+  3c:	aafffff5 	bge	18 <LOOP>
+			MOV R6, R1			// If R1 is less than min, store R1 in R6
+  40:	e1a06001 	mov	r6, r1
+			B LOOP				// Branch to LOOP
+  44:	eafffff3 	b	18 <LOOP>
+
+00000048 <DONE>:
+
+DONE:		SUBS R1, R5, R6 	// Subtract the max value by the min value
+  48:	e0551006 	subs	r1, r5, r6
+			LSR R4, R1, #2		// Divide the difference by 4 and store in R4
+  4c:	e1a04121 	lsr	r4, r1, #2
+
+00000050 <END>:
+
+END:		B END				// End
+  50:	eafffffe 	b	50 <END>
+
+00000054 <RESULT>:
+  54:	00000000 	.word	0x00000000
+
+00000058 <N>:
+  58:	00000008 	.word	0x00000008
+
+0000005c <NUMBERS>:
+  5c:	00000004 	.word	0x00000004
+  60:	00000005 	.word	0x00000005
+  64:	00000003 	.word	0x00000003
+  68:	00000006 	.word	0x00000006
+  6c:	00000002 	.word	0x00000002
+  70:	00000008 	.word	0x00000008
+  74:	00000002 	.word	0x00000002
+  78:	00000012 	.word	0x00000012
+  7c:	00000054 	.word	0x00000054

@@ -1,0 +1,35 @@
+
+//campus.mcgill.ca/EMF/ELE/jpeter38/My Documents/ECSE324/G55_Lab2/stack.axf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 <__cs3_interrupt_vector>:
+			.text
+   			.global _start
+_start:
+			MOV sp, #0x00000100	// Set the stack pointer
+   0:	e3a0dc01 	mov	sp, #256	; 0x100
+			MOV R0, #1			// Set R0 = 1 
+   4:	e3a00001 	mov	r0, #1
+			MOV R1, #2			// Set R1 = 2
+   8:	e3a01002 	mov	r1, #2
+			MOV R2, #3			// Set R3 = 3
+   c:	e3a02003 	mov	r2, #3
+			STR R0, [sp, #-4]!	// Store R0 in [sp - 4] then decrement stack by 4
+  10:	e52d0004 	push	{r0}		; (str r0, [sp, #-4]!)
+			STR R1, [sp, #-4]!	// Store R1 in [sp - 4] then decrement stack by 4
+  14:	e52d1004 	push	{r1}		; (str r1, [sp, #-4]!)
+			STR R2, [sp, #-4]!	// Store R2 in [sp - 4] then decrement stack by 4
+  18:	e52d2004 	push	{r2}		; (str r2, [sp, #-4]!)
+			LDR R2, [sp], #4	// Load value at sp and increment stack by 4
+  1c:	e49d2004 	pop	{r2}		; (ldr r2, [sp], #4)
+			LDR R1, [sp], #4	// Load value at sp and increment stack by 4	
+  20:	e49d1004 	pop	{r1}		; (ldr r1, [sp], #4)
+			LDR R0, [sp], #4	// Load value at sp and increment stack by 4		
+  24:	e49d0004 	pop	{r0}		; (ldr r0, [sp], #4)
+
+00000028 <END>:
+
+END:		B END
+  28:	eafffffe 	b	28 <END>

@@ -1,0 +1,78 @@
+
+//campus.mcgill.ca/EMF/ELE/jpeter38/My Documents/ECSE324/G55_Lab2/sub.axf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 <__cs3_interrupt_vector>:
+			.text
+   			.global _start
+_start:
+			LDR R1, =NUMBERS	// R1 points to location of first number in list
+   0:	e59f106c 	ldr	r1, [pc, #108]	; 74 <NUMBERS+0x1c>
+			LDR R2, N			// R2 holds the number of elements
+   4:	e59f2048 	ldr	r2, [pc, #72]	; 54 <N>
+			LDR R0, [R1]   		// R0 holds the first number in the list
+   8:	e5910000 	ldr	r0, [r1]
+			PUSH {R0-R2, LR}	// PUSH Registers R0 to R3 & link register
+   c:	e92d4007 	push	{r0, r1, r2, lr}
+			BL find_max			// Brand to find_max and store next intrustion in LR
+  10:	eb000002 	bl	20 <find_max>
+			STR R0, RESULT		// Store max
+  14:	e58f0034 	str	r0, [pc, #52]	; 50 <RESULT>
+			POP {R0-R2, LR}		// POP Registers R0 to R3 & link register
+  18:	e8bd4007 	pop	{r0, r1, r2, lr}
+			B END
+  1c:	ea00000a 	b	4c <END>
+
+00000020 <find_max>:
+
+find_max:	PUSH {R4}			// Push R4 	
+  20:	e52d4004 	push	{r4}		; (str r4, [sp, #-4]!)
+
+00000024 <LOOP>:
+LOOP:		SUBS R2, R2 , #1	// Decrement Loop Counter
+  24:	e2522001 	subs	r2, r2, #1
+			BEQ RETURN			// End when finished
+  28:	0a000005 	beq	44 <RETURN>
+			ADD R1, R1, #4		// R1 points to next element
+  2c:	e2811004 	add	r1, r1, #4
+			LDR R4, [R1]		// Holds value of R4	
+  30:	e5914000 	ldr	r4, [r1]
+			CMP R0, R4			// Compare R0 - R4
+  34:	e1500004 	cmp	r0, r4
+			BGE LOOP   			// If greater or equal to 0, Loop
+  38:	aafffff9 	bge	24 <LOOP>
+			MOV R0, R4			// Update max
+  3c:	e1a00004 	mov	r0, r4
+			B LOOP
+  40:	eafffff7 	b	24 <LOOP>
+
+00000044 <RETURN>:
+		
+
+RETURN:		POP {R4}			// POP R4
+  44:	e49d4004 	pop	{r4}		; (ldr r4, [sp], #4)
+			BX LR				// Branch to LR
+  48:	e12fff1e 	bx	lr
+
+0000004c <END>:
+
+END:		B END				// Loop END
+  4c:	eafffffe 	b	4c <END>
+
+00000050 <RESULT>:
+  50:	00000000 	.word	0x00000000
+
+00000054 <N>:
+  54:	00000007 	.word	0x00000007
+
+00000058 <NUMBERS>:
+  58:	00000004 	.word	0x00000004
+  5c:	00000002 	.word	0x00000002
+  60:	00000003 	.word	0x00000003
+  64:	00000006 	.word	0x00000006
+  68:	00000001 	.word	0x00000001
+  6c:	00000008 	.word	0x00000008
+  70:	0000000c 	.word	0x0000000c
+  74:	00000058 	.word	0x00000058

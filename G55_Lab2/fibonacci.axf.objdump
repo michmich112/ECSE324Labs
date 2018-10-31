@@ -1,0 +1,83 @@
+
+//campus.mcgill.ca/EMF/ELE/jpeter38/My Documents/ECSE324/G55_Lab2/fibonacci.axf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 <__cs3_interrupt_vector>:
+			.text
+			.global _start
+_start:		
+			LDR R0, N			// R0 holds contents of N 
+   0:	e59f006c 	ldr	r0, [pc, #108]	; 74 <N>
+			MOV R1, #0			// initialize
+   4:	e3a01000 	mov	r1, #0
+			MOV R2, #0			// initialize
+   8:	e3a02000 	mov	r2, #0
+			PUSH {R0, R1, R2, LR}	// Push R0 and R1 
+   c:	e92d4007 	push	{r0, r1, r2, lr}
+			BL FIB				// Branch to fib and save next intrusction in LR
+  10:	eb000002 	bl	20 <FIB>
+			STR R0, RESULT		// Store result
+  14:	e58f005c 	str	r0, [pc, #92]	; 78 <RESULT>
+			POP {R0, R1, R2, LR}	// Restore the original registers
+  18:	e8bd4007 	pop	{r0, r1, r2, lr}
+			B END				// branch to end loop
+  1c:	ea000013 	b	70 <END>
+
+00000020 <FIB>:
+
+FIB:		PUSH {LR}			// Push LR
+  20:	e52de004 	push	{lr}		; (str lr, [sp, #-4]!)
+			CMP R0, #2			// Compare R0 - 2
+  24:	e3500002 	cmp	r0, #2
+			BLT isOne			// If N is less than 2 result is 1
+  28:	ba00000d 	blt	64 <isOne>
+			SUB R1, R0, #1		// F(n-1)
+  2c:	e2401001 	sub	r1, r0, #1
+			SUB R2, R0, #2		// F(n-2)
+  30:	e2402002 	sub	r2, r0, #2
+			PUSH {R2}			// Store n-2
+  34:	e52d2004 	push	{r2}		; (str r2, [sp, #-4]!)
+			MOV R0, R1			// change recursion conditional to n-1
+  38:	e1a00001 	mov	r0, r1
+			BL FIB				// recursion for F(n-1)
+  3c:	ebfffff7 	bl	20 <FIB>
+			POP {R2}			// R2 holds n-1
+  40:	e49d2004 	pop	{r2}		; (ldr r2, [sp], #4)
+			PUSH {R0}			// store value for f(n-1)
+  44:	e52d0004 	push	{r0}		; (str r0, [sp, #-4]!)
+			MOV R0, R2			// change recursion conditional to n-2
+  48:	e1a00002 	mov	r0, r2
+			BL FIB				// recursion for F(n-2)		
+  4c:	ebfffff3 	bl	20 <FIB>
+			MOV R2, R0			// set R2 to F(n-2)
+  50:	e1a02000 	mov	r2, r0
+			POP {R1}
+  54:	e49d1004 	pop	{r1}		; (ldr r1, [sp], #4)
+			ADD R0, R1, R2		// Add results
+  58:	e0810002 	add	r0, r1, r2
+			POP {LR}
+  5c:	e49de004 	pop	{lr}		; (ldr lr, [sp], #4)
+			BX LR
+  60:	e12fff1e 	bx	lr
+
+00000064 <isOne>:
+
+isOne:		MOV R0, #1			// Set result to 1
+  64:	e3a00001 	mov	r0, #1
+			POP {LR}
+  68:	e49de004 	pop	{lr}		; (ldr lr, [sp], #4)
+			BX LR
+  6c:	e12fff1e 	bx	lr
+
+00000070 <END>:
+
+END:		B END
+  70:	eafffffe 	b	70 <END>
+
+00000074 <N>:
+  74:	00000007 	.word	0x00000007
+
+00000078 <RESULT>:
+  78:	00000000 	.word	0x00000000
