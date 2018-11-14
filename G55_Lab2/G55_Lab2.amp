@@ -2,7 +2,7 @@
     <architecture>ARM Cortex-A9</architecture>
     <system>
         <sample_system_title>DE1-SoC Computer for ARM-A9</sample_system_title>
-        <cable>DE-SoC [USB-1]</cable>
+        <cable>null</cable>
         <processor>ARM_A9_HPS_arm_a9_0</processor>
         <reset_processor_during_load>true</reset_processor_during_load>
         <terminal>Semihosting</terminal>
@@ -11,6 +11,7 @@
         <type>Assembly Program</type>
         <source_files>
             <source_file filepath="true">sub.s</source_file>
+            <source_file filepath="true">stack.s</source_file>
         </source_files>
         <options>
             <start_symbol>_start</start_symbol>
