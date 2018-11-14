@@ -18,11 +18,13 @@ HEX_flood_ASM:
 		LDR R2, [R3]			//holds the value that is stored in hexbase2
 		BIC R1, R0, #32 		//32 in bin is 0100000
 		CMP R1, #32
+
 		ORREQ R2, R2, #0x0000FF00 // 0x0FF00 is the equivalent of 0...01111111100000000 effectively flooding the data
 		BIC R1, R0, #16			//16 in bin is 0010000
 		CMP R1, #16
 		ORREQ R2, R2, #0x000000FF // 0x000FF is the equivalent of 0...00000000011111111 effectively flooding the data
 		STR R2, [R3] 				// Store the new value in the correct memoryspace
+
 		LDR R3, =HEX_BASE1 		//holds the memory address of hexbase1
 		LDR R2, [R3]			//holds the value that is stored in hexbase1
 		BIC R1, R0, #8
