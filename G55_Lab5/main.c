@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include "./drivers/inc/vga.h"
 #include "./drivers/inc/ISRs.h"
 #include "./drivers/inc/LEDs.h"
@@ -34,7 +33,6 @@ double getSample(float freq, int t) {
 
 	int index = truncatedIndex % 48000;
 	//calculate linear interpolation
-	//sine[casted + fractional] = (1-fractional)*sine[index] + fractional[index+1]
 	double signal = (1.0 - fractional) * sine[index] + fractional * sine[index + 1]; //lol lets hope it doesnt overflow
 
 	return signal;
@@ -51,7 +49,6 @@ double generateSignal(char* keys, int t) {
 		if(keys[i] == 1){
 			// Sum all frequency samples
 			data += getSampleOld(frequencies[i], t);
-			//data += getSample(frequencies[i], t);
 		}
 	}
 	return data;
@@ -114,13 +111,92 @@ int main() {
 	double history[320] = { 0 };
 	int volume = 1;
 	char value;
-	
+	int t = 0;
+	double signalSum = 0.0;
+
 	while(1){
 		writeNames();
 		writeVolume(volume);
 
 		if(read_ps2_data_ASM(&value)) {
 			switch (value) {
+				// A = 130.813Hz
+				case 0x1C:
+					if(keyReleased == 1){
+						// printf( "a release\n" );
+						keysPressed[0] = 0;
+						keyReleased = 0;
+					} else{
+						// printf( "a press\n" );
+						keysPressed[0] = 1;
+					}
+					break;
+				// S = 146.832Hz
+				case 0x1B:
+					if(keyReleased == 1){
+						// printf( "s release\n" );
+						keysPressed[1] = 0;
+						keyReleased = 0;
+					} else{
+						// printf( "s press\n" );
+						keysPressed[1] = 1;
+					}
+					break;
+				// D = 164.814Hz
+				case 0x23:
+					if(keyReleased == 1){
+						keysPressed[2] = 0;
+						keyReleased = 0;
+					} else{
+						keysPressed[2] = 1;
+					}
+					break;
+				// F = 174.614Hz
+				case 0x2B:
+					if(keyReleased == 1){
+						keysPressed[3] = 0;
+						keyReleased = 0;
+					} else{
+						keysPressed[3] = 1;
+					}
+					break;
+				// J = 195.998Hz
+				case 0x3B:
+					if(keyReleased == 1){
+						keysPressed[4] = 0;
+						keyReleased = 0;
+					} else{
+						keysPressed[4] = 1;
+					}
+					break;
+				// K = 220.000Hz
+				case 0x42:
+					if(keyReleased == 1){
+						keysPressed[5] = 0;
+						keyReleased = 0;
+					} else{
+						keysPressed[5] = 1;
+					}
+					break;
+				// L = 246.942Hz
+				case 0x4B:
+					if(keyReleased == 1){
+						keysPressed[6] = 0;
+						keyReleased = 0;
+					} else{
+						keysPressed[6] = 1;
+					}
+					break;
+				// ; = 261.626Hz
+				case 0x4C:
+					if(keyReleased == 1){
+						keysPressed[7] = 0;
+						keyReleased = 0;
+					}else{
+						keysPressed[7] = 1;
+					}
+					break;
+				// =/+ = vol up
 				case 0x55:
 					if(keyReleased){
 						if(volume<10){
@@ -129,6 +205,7 @@ int main() {
 						keyReleased = 0;
 					}
 					break;
+				// -/_ = vol up
 				case 0x4E:
 					if(keyReleased){
 						if(volume>1){
@@ -137,7 +214,8 @@ int main() {
 						keyReleased = 0;
 					}
 					break;
-				case 0xF0: //the break code is the same for all keys
+				//the break code is the same for all keys
+				case 0xF0:
 					keyReleased = 1;
 					break;
 				default:
@@ -145,7 +223,35 @@ int main() {
 			}
 		}
 
+		signalSum = generateSignal(keysPressed, t); //generate the signal at this t based on what keys were pressed
 
+		signalSum = volume * signalSum; //this is volume control
+
+		int drawIndex = 0;
+		double valToDraw = 0;
+		// To reduce the number of drawing operations
+		if((t%10 == 0)){
+			audio_write_data_ASM(signalSum, signalSum);
+			drawIndex = (t/10)%320;
+			//clear drawn points
+			VGA_draw_point_ASM(drawIndex, history[drawIndex], 0);
+			//120 centers the signal on the screen, 500000 is abitrary to make it fit
+			valToDraw = 120 + signalSum/500000;
+			//add new points to history array
+			history[drawIndex] = valToDraw;
+			//draw new points
+			VGA_draw_point_ASM(drawIndex, valToDraw, 120);		
+		}
+		
+		// Reset the signal
+		signalSum = 0;
+		// Reset the counter
+		if(t==48000){
+			t=0;
+		}else{
+			t++;
+		}
+		
 	}
 
 	return 0;
