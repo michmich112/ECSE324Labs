@@ -17,7 +17,7 @@ float frequencies[] = {130.813, 146.832, 164.814, 174.614, 195.998, 220.000, 246
 
 // Get the sample based on the frequency and the "index"
 // Returns double: signal
-double getSampleOld(float freq, int t) {
+double getSample(float freq, int t) {
 
 	int index = (((int)freq) * t)%48000;
 	double signal = sine[index];
@@ -27,7 +27,7 @@ double getSampleOld(float freq, int t) {
 
 // Get the sample based on the frequency and the "index" using linear interpolation
 // Returns double: signal
-double getSample(float freq, int t) {
+double getSampleInterpolation(float freq, int t) {
 	int truncatedIndex = ((int) freq)*t;
 	double fractional = (freq*t) - truncatedIndex;
 
@@ -48,7 +48,7 @@ double generateSignal(char* keys, int t) {
 		// Check if key is pressed
 		if(keys[i] == 1){
 			// Sum all frequency samples
-			data += getSampleOld(frequencies[i], t);
+			data += getSample(frequencies[i], t);
 		}
 	}
 	return data;
